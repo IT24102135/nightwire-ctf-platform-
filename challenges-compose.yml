@@ -1,0 +1,30 @@
+services:
+  stage1-osint:
+    build: ./nightwire-ctf/stages/stage-01
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+
+  stage2-stego:
+    build: ./nightwire-ctf/stages/stage-02
+    ports:
+      - "8082:80"
+    restart: unless-stopped
+
+  stage3-web:
+    build: ./nightwire-ctf/stages/stage-03
+    ports:
+      - "8083:80"
+    restart: unless-stopped
+
+  stage4-crypto:
+    build: ./stages/stage4-crypto
+    ports:
+      - "8084:80"
+    restart: unless-stopped
+
+  stage5-forensics:
+    build: ./stages/stage5-forensics
+    ports:
+      - "8085:80"
+    restart: unless-stopped

@@ -1,0 +1,85 @@
+version: '3'
+
+services:
+  ctfd:
+    image: ctfd/ctfd:latest
+    user: root
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - UPLOAD_FOLDER=/var/uploads
+      - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
+      - REDIS_URL=redis://cache:6379
+    volumes:
+      - .data/CTFd/logs:/var/log/CTFd
+      - .data/CTFd/uploads:/var/uploads
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.11
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=ctfd
+      - MYSQL_USER=ctfd
+      - MYSQL_PASSWORD=ctfd
+      - MYSQL_DATABASE=ctfd
+    volumes:
+      - .data/mysql:/var/lib/mysql
+
+  cache:
+    image: redis:alpine
+    restart: always
+
+  stage1-osint:
+    build:
+      context: ../../nightwire-ctf/stages/stage-01
+    container_name: stage1-osint
+    restart: always
+    ports:
+      - "8082:80"
+
+  stage2-stego:
+    build:
+      context: ../../nightwire-ctf/stages/stage-02
+    container_name: stage2-stego
+    restart: always
+    ports:
+      - "8083:80"
+
+  stage3-db:
+    image: mariadb:10.11
+    container_name: stage3-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_HOST=%
+    volumes:
+      - ../../nightwire-ctf/stages/stage-03/src/db/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+
+  stage3-web:
+    build:
+      context: ../../nightwire-ctf/stages/stage-03
+    container_name: stage3-web
+    restart: always
+    ports:
+      - "8081:80"
+    depends_on:
+      - stage3-db
+
+  stage4-crypto:
+    build:
+      context: ../../stages/stage4-crypto
+    container_name: stage4-crypto
+    restart: always
+    ports:
+      - "8084:80"
+
+  stage5-forensics:
+    build:
+      context: ../../stages/stage5-forensics
+    container_name: stage5-forensics
+    restart: always
+    ports:
+      - "8085:80"

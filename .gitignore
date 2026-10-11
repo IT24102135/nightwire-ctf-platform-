@@ -1,0 +1,45 @@
+platform/ctfd/.data/
+platform/wireguard/config/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Private keys (NEVER commit)
+private.pem
+*.key
+*.pem.key
+
+# VirtualBox VM files (too large)
+*.ova
+*.vdi
+*.vbox
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Sensitive data
+secrets/
+*.secret
+
+# Stage 4 sensitive files
+stages/stage4-crypto/config_backup.ini
+stages/stage4-crypto/service_creds.txt
+stages/stage4-crypto/private.pem
+stages/stage4-crypto/.venv/
+
+# Stage 6 VM files
+stages/stage6-linux-vm/*.ova
+stages/stage6-linux-vm/*.vdi
+stages/stage6-linux-vm/*.vbox
